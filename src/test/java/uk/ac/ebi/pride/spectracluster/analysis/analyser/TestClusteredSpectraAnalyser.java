@@ -40,11 +40,11 @@ public class TestClusteredSpectraAnalyser {
 
         String resultString = clusteredSpectraAnalyser.getAnalysisResultString();
 
-        Assert.assertEquals("min_cluster_size\tclustered_spectra\n" +
-                "1\t7234\n" +
-                "50\t3320\n" +
-                "3\t6410\n" +
-                "5\t6096\n" +
-                "10\t5617\n", resultString);
+        Assert.assertEquals("min_cluster_size\tclustered_spectra\ttotal_cluster_size\tn_clusters\n" +
+                "1\t7234\t8927\t960\n" +
+                "50\t3320\t4292\t36\n" +
+                "3\t6410\t8013\t375\n" +
+                "5\t6096\t7609\t267\n" +
+                "10\t5617\t6970\t170\n", resultString);
     }
 }
