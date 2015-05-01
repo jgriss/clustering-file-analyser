@@ -7,6 +7,7 @@ import org.apache.commons.cli.HelpFormatter;
 import uk.ac.ebi.pride.spectracluster.analysis.analyser.AbstractClusteringSourceAnalyser;
 import uk.ac.ebi.pride.spectracluster.analysis.analyser.AnalyserFactory;
 import uk.ac.ebi.pride.spectracluster.analysis.analyser.IClusteringSourceAnalyser;
+import uk.ac.ebi.pride.spectracluster.analysis.io.MsClusterFileReader;
 import uk.ac.ebi.pride.spectracluster.analysis.util.SpectrumExtractor;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.ClusteringFileReader;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceListener;
@@ -147,7 +148,11 @@ public class ClusteringFileAnalyserCli {
 
         for (String filename : filenames) {
             System.out.println("Processing " + filename);
-            IClusterSourceReader reader = new ClusteringFileReader(new File(filename));
+            IClusterSourceReader reader;
+            if (filename.endsWith(".clust"))
+                reader = new MsClusterFileReader(new File(filename));
+            else
+                reader = new ClusteringFileReader(new File(filename));
             reader.readClustersIteratively(listener);
         }
 
@@ -186,7 +191,12 @@ public class ClusteringFileAnalyserCli {
             Set<IClusterSourceListener> listener = new HashSet<IClusterSourceListener> (analyser);
 
             // open the file
-            IClusterSourceReader reader = new ClusteringFileReader(fileToAnalyse);
+            IClusterSourceReader reader;
+
+            if (fileToAnalyse.toString().endsWith(".clust"))
+                reader = new MsClusterFileReader(fileToAnalyse);
+            else
+                reader = new ClusteringFileReader(fileToAnalyse);
 
             reader.readClustersIteratively(listener);
 
