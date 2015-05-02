@@ -66,8 +66,8 @@ public class MsClusterFileReader implements IClusterSourceReader {
         // get the cluster's details
         String[] clusterHeaderFields = currentLine.split("\t");
 
-        if (clusterHeaderFields.length != 4) {
-            throw new Exception("Cluster header line contains less than 4 fields: " + currentLine);
+        if (clusterHeaderFields.length != 4 && clusterHeaderFields.length != 5) {
+            throw new Exception("Cluster header line contains less than 4 and 5 fields: " + currentLine);
         }
 
         List<MsClusterSpectrum> currentSpectra = new ArrayList<MsClusterSpectrum>();
@@ -79,7 +79,7 @@ public class MsClusterFileReader implements IClusterSourceReader {
             String[] fields = currentLine.split("\t");
 
             // check if it's a cluster
-            if (fields.length == 4) {
+            if (fields.length < 7) {
                 break;
             }
 
