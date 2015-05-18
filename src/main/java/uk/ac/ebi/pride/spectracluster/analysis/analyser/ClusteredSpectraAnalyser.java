@@ -114,12 +114,13 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
                     else
                         incorrectlyAssignedSpectra.put(minSize, incorrectlyAssignedSpectra.get(minSize) + 1);
                 }
-
-                if (!totalSpectra.containsKey(minSize))
-                    totalSpectra.put(minSize, newCluster.getSpecCount());
-                else
-                    totalSpectra.put(minSize, totalSpectra.get(minSize) + newCluster.getSpecCount());
             }
+
+            // TODO: unclear what total_spectra is for
+            if (!totalSpectra.containsKey(minSize))
+                totalSpectra.put(minSize, newCluster.getSpecCount());
+            else
+                totalSpectra.put(minSize, totalSpectra.get(minSize) + newCluster.getSpecCount());
 
             if (isMixedCluster) {
                 if (!mixedClusters.containsKey(minSize))
