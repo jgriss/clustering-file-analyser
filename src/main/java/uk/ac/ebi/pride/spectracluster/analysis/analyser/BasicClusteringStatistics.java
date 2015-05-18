@@ -2,6 +2,12 @@ package uk.ac.ebi.pride.spectracluster.analysis.analyser;
 
 import uk.ac.ebi.pride.spectracluster.analysis.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ISpectrumReference;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jg on 12.07.14.
@@ -24,6 +30,8 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
     private long totalNumberOfSpectra = 0;
     private long totalNumberOfMismatchedSpectra = 0;
     private int cleanClusters = 0;
+    private Map<String, Integer> speciesCounts = new HashMap<String, Integer>();
+
     /**
      * Number of clusters with a large precursor m/z range
      */
@@ -77,6 +85,8 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
         if (maxRatio < newCluster.getMaxRatio())
             maxRatio = newCluster.getMaxRatio();
 
+        processSpecies(newCluster);
+
         ClusterUtilities clusterUtilities = new ClusterUtilities(newCluster);
 
         if (clusterUtilities.getMaxILAngosticRatio() == 1) {
@@ -91,9 +101,31 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
             stableClusters++;
     }
 
+    private void processSpecies(ICluster newCluster) {
+        for (ISpectrumReference spectrumReference : newCluster.getSpectrumReferences()) {
+            String speciesString = spectrumReference.getSpecies();
+
+            if (speciesString == null)
+                continue;
+
+            String[] speciesFields = speciesString.split(",");
+
+            Set<String> uniqueSpecies = new HashSet<String>();
+            for (String speciesField : speciesFields)
+                uniqueSpecies.add(speciesField);
+
+            for (String species : uniqueSpecies) {
+                if (!speciesCounts.containsKey(species))
+                    speciesCounts.put(species, 1);
+                else
+                    speciesCounts.put(species, speciesCounts.get(species) + 1);
+            }
+        }
+    }
+
     @Override
     public String getAnalysisResultString() {
-        return String.format("Number of clusters: %.0f (%d with 1 spec)\n" +
+        String resultString = String.format("Number of clusters: %.0f (%d with 1 spec)\n" +
                         "Average maximum ratio: %.3f\n" +
                         "Average cluster size: %.3f\n" +
                         "Minimum size: %d\nMaximum size: %d\n" +
@@ -108,6 +140,12 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
                 minRatio, maxRatio, stableClusters, totalPrecursorMzRange / (nClusters - nSingleClusters),
                 maxPrecursorMzRange, LARGE_PRECURSOR_MZ_RANGE, nLargePrecursorMzRange,
                 (float) (totalNumberOfMismatchedSpectra * 100 / totalNumberOfSpectra), (float) (cleanClusters * 100 / nClusters));
+
+        for (String species : speciesCounts.keySet()) {
+            resultString += "Species " + species + ": " + speciesCounts.get(species) + "\n";
+        }
+
+        return resultString;
     }
 
     @Override
