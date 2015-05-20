@@ -175,6 +175,10 @@ public class ClusteringFileAnalyserCli {
 
     private static void analyseFile(String filename, Set<AbstractClusteringSourceAnalyser> analyser, String outputPath) {
         try {
+            // reset the analysers
+            for (AbstractClusteringSourceAnalyser clusteringSourceAnalyser : analyser)
+                clusteringSourceAnalyser.reset();
+
             System.out.println("Analysing '" + filename);
             File fileToAnalyse = new File(filename);
 
