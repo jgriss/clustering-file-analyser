@@ -12,6 +12,7 @@ public class AnalyserFactory {
         BASIC_CLUSTERING_STATISTICS("BasicClusteringAnalyzer"),
         CLUSTER_DUPLICATION_ANALYSER("ClusterDuplicationAnalyser"),
         CLUSTER_PARAMETER_EXTRACTOR("ClusterParameterExtractor"),
+        EXTENDED_PARANETER_EXTRACTOR("ExtendedParameters"),
         ID_CLUSTER_PARAMETER_EXTRACTOR("IdClusterParameterExtractor"),
         CLUSTERED_SPECTRA_ANALYSER("ClusteredSpectra");
 
@@ -48,6 +49,8 @@ public class AnalyserFactory {
                 return new ClusterDuplicationAnalyser();
             case CLUSTER_PARAMETER_EXTRACTOR:
                 return new ClusterParameterExtractor();
+            case EXTENDED_PARANETER_EXTRACTOR:
+                return new ExtendedClusterParameterExtractor();
             case ID_CLUSTER_PARAMETER_EXTRACTOR:
                 return new IdentifiedClusterParameterExtractor();
             case CLUSTERED_SPECTRA_ANALYSER:

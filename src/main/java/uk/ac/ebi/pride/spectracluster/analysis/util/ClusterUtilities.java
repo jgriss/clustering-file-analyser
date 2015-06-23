@@ -27,6 +27,9 @@ public class ClusterUtilities {
     private String secondMaxSequence;
     private int secondMaxSequenceCount;
 
+    private String thirdMaxSequence;
+    private int thirdMaxSequenceCount;
+
     public ClusterUtilities() {
 
     }
@@ -45,11 +48,45 @@ public class ClusterUtilities {
         currentCluster = cluster;
 
         updateNumberOfProjects(cluster);
-        updateMaxSequence(cluster);
-        updateSecondMaxSequence(cluster);
+
+        // update the sequences
+        updateSequences(cluster);
         updatePrecursorMzRange(cluster);
         updateSpecies(cluster);
         charge = calculateCharge(cluster);
+    }
+
+    private void updateSequences(ICluster cluster) {
+        // update the most common sequence
+        List<Object> maxSequenceProperties = getMaxSequence(cluster, Collections.EMPTY_SET);
+
+        this.maxSequence = (String) maxSequenceProperties.get(0);
+        this.maxSequenceCount = (Integer) maxSequenceProperties.get(1);
+        this.maxILAngosticRatio = (float) this.maxSequenceCount / cluster.getSpectrumReferences().size();
+        this.sequenceCounts = createSequenceCounts(cluster);
+
+        // get the second most common sequence
+        String maxIlAgnosticSequence = this.maxSequence.replaceAll("I", "L");
+        Set<String> knownSequence = new HashSet<String>();
+        knownSequence.add(maxIlAgnosticSequence);
+
+        maxSequenceProperties = getMaxSequence(cluster, knownSequence);
+
+        this.secondMaxSequence = (String) maxSequenceProperties.get(0);
+        this.secondMaxSequenceCount = (Integer) maxSequenceProperties.get(1);
+
+        // get the third max sequence
+        if (secondMaxSequence != null) {
+            knownSequence.add(secondMaxSequence.replace("I", "L"));
+            maxSequenceProperties = getMaxSequence(cluster, knownSequence);
+
+            this.thirdMaxSequence = (String) maxSequenceProperties.get(0);
+            this.thirdMaxSequenceCount = (Integer) maxSequenceProperties.get(1);
+        }
+        else {
+            this.thirdMaxSequence = null;
+            this.thirdMaxSequenceCount = 0;
+        }
     }
 
     private int calculateCharge(ICluster cluster) {
@@ -74,59 +111,6 @@ public class ClusterUtilities {
         }
     }
 
-    /**
-     * Returns a cluster's maximum ratio treating I and L as indistinguishable.
-     * @param cluster
-     * @return
-     */
-    private void updateMaxSequence(ICluster cluster) {
-        Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
-        Map<String, String> ilCorrectedToOriginalSequence = new HashMap<String, String>();
-
-        for (ISpectrumReference spectrumReference : cluster.getSpectrumReferences()) {
-            IPeptideSpectrumMatch peptideSpectrumMatch = spectrumReference.getMostCommonPSM();
-            String ilAgnosticSequence = peptideSpectrumMatch.getSequence().replaceAll("I", "L");
-            ilAgnosticSequence = cleanSequence(ilAgnosticSequence);
-
-            if (!ilCorrectedToOriginalSequence.containsKey(ilAgnosticSequence)) {
-                ilCorrectedToOriginalSequence.put(ilAgnosticSequence, peptideSpectrumMatch.getSequence());
-            }
-
-            if (!sequenceCounts.containsKey(ilAgnosticSequence)) {
-                sequenceCounts.put(ilAgnosticSequence, 0);
-            }
-
-            sequenceCounts.put(ilAgnosticSequence, sequenceCounts.get(ilAgnosticSequence) + 1);
-        }
-
-        // get the max count
-        int maxCount = 0;
-        String maxSequence = null;
-
-        for (String ilAgnosticSequence : sequenceCounts.keySet()) {
-            int count = sequenceCounts.get(ilAgnosticSequence);
-
-            if (count > maxCount) {
-                maxSequence = ilCorrectedToOriginalSequence.get(ilAgnosticSequence);
-                maxCount = count;
-            }
-        }
-
-        // update the internal sequence counts
-        this.sequenceCounts = new HashMap<String, Integer>();
-        for (String ilAgnosticSequence : sequenceCounts.keySet()) {
-            String originalSequence = ilCorrectedToOriginalSequence.get(ilAgnosticSequence);
-            originalSequence = cleanSequence(originalSequence);
-
-            this.sequenceCounts.put(originalSequence, sequenceCounts.get(ilAgnosticSequence));
-        }
-
-        // update the internal variables
-        this.maxILAngosticRatio = (float) maxCount / cluster.getSpectrumReferences().size();
-        this.maxSequence = cleanSequence(maxSequence);
-        this.maxSequenceCount = maxCount;
-    }
-
     public static String cleanSequence(String sequence) {
         if (sequence == null) {
             return null;
@@ -135,8 +119,29 @@ public class ClusterUtilities {
         return sequence.toUpperCase().replaceAll("[^A-Z]", "");
     }
 
-    private void updateSecondMaxSequence(ICluster cluster) {
-        String maxIlAgnosticSequence = maxSequence.replaceAll("I", "L");
+    private Map<String, Integer> createSequenceCounts(ICluster cluster) {
+        Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
+
+        for (ISpectrumReference spectrumReference : cluster.getSpectrumReferences()) {
+            IPeptideSpectrumMatch peptideSpectrumMatch = spectrumReference.getMostCommonPSM();
+            String cleanSequence = cleanSequence(peptideSpectrumMatch.getSequence());
+
+            if (!sequenceCounts.containsKey(cleanSequence))
+                sequenceCounts.put(cleanSequence, 1);
+            else
+                sequenceCounts.put(cleanSequence, sequenceCounts.get(cleanSequence) + 1);
+        }
+
+        return sequenceCounts;
+    }
+
+    /**
+     * Retruns the sequence and the max count when ignoring the sequences set in knownMaxSequence
+     * @param cluster
+     * @param knownMaxSequence
+     * @return
+     */
+    private List<Object> getMaxSequence(ICluster cluster, Set<String> knownMaxSequence) {
         Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
         Map<String, String> ilCorrectedToOriginalSequence = new HashMap<String, String>();
 
@@ -145,8 +150,8 @@ public class ClusterUtilities {
             String ilAgnosticSequence = peptideSpectrumMatch.getSequence().replaceAll("I", "L");
             ilAgnosticSequence = cleanSequence(ilAgnosticSequence);
 
-            // simply ignore the current max sequence
-            if (maxIlAgnosticSequence.equals(ilAgnosticSequence))
+            // ignore previously processed sequences
+            if (knownMaxSequence.contains(ilAgnosticSequence))
                 continue;
 
             if (!ilCorrectedToOriginalSequence.containsKey(ilAgnosticSequence)) {
@@ -173,8 +178,11 @@ public class ClusterUtilities {
             }
         }
 
-        secondMaxSequence = cleanSequence(maxSequence);
-        secondMaxSequenceCount = maxCount;
+        List<Object> result = new ArrayList<Object>(2);
+        result.add(maxSequence);
+        result.add(new Integer(maxCount));
+
+        return result;
     }
 
     private void updateNumberOfProjects(ICluster cluster) {
@@ -254,6 +262,14 @@ public class ClusterUtilities {
 
     public Map<String, Integer> getSequenceCounts() {
         return Collections.unmodifiableMap(sequenceCounts);
+    }
+
+    public String getThirdMaxSequence() {
+        return thirdMaxSequence;
+    }
+
+    public int getThirdMaxSequenceCount() {
+        return thirdMaxSequenceCount;
     }
 
     public boolean isStable() {
