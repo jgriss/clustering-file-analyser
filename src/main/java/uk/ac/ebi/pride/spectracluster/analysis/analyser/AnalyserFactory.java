@@ -14,7 +14,8 @@ public class AnalyserFactory {
         CLUSTER_PARAMETER_EXTRACTOR("ClusterParameterExtractor"),
         EXTENDED_PARANETER_EXTRACTOR("ExtendedParameters"),
         ID_CLUSTER_PARAMETER_EXTRACTOR("IdClusterParameterExtractor"),
-        CLUSTERED_SPECTRA_ANALYSER("ClusteredSpectra");
+        CLUSTERED_SPECTRA_ANALYSER("ClusteredSpectra"),
+        PROJECT_ANALYSER("ProjectAnalyser");
 
         private String name;
         private ANALYSERS(String name) {
@@ -55,6 +56,8 @@ public class AnalyserFactory {
                 return new IdentifiedClusterParameterExtractor();
             case CLUSTERED_SPECTRA_ANALYSER:
                 return new ClusteredSpectraAnalyser();
+            case PROJECT_ANALYSER:
+                return new ProjectAnalyser();
             default:
                 return null;
         }

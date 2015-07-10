@@ -105,8 +105,8 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
         String projectThridS = getProjectStringForSequence(newCluster, clusterUtilities.getThirdMaxSequence());
 
         String maxContam = CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getMaxSequence());
-        String secContam = CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getSecondMaxSequence());
-        String thirdContam = CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getThirdMaxSequence());
+        String secContam = clusterUtilities.getSecondMaxSequence() != null ? CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getSecondMaxSequence()) : "";
+        String thirdContam = clusterUtilities.getThirdMaxSequence() != null ? CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getThirdMaxSequence()): "";
 
         // add the string representing the cluster to the result buffer
         resultStringBuffer.append(
