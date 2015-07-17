@@ -1,9 +1,15 @@
 package uk.ac.ebi.pride.spectracluster.analysis.analyser;
 
+import uk.ac.ebi.pride.spectracluster.analysis.util.ClusterUtilities;
+import uk.ac.ebi.pride.spectracluster.analysis.util.ModificationMapper;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceListener;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.IModification;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.IPeptideSpectrumMatch;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ISpectrumReference;
 
 import java.io.Writer;
+import java.util.Set;
 
 /**
  * Created by jg on 06.11.14.
@@ -15,6 +21,7 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
     private float maxClusterRatio = Float.MAX_VALUE;
     private float minPrecursorMz = Float.MIN_VALUE;
     private float maxPrecursorMz = Float.MAX_VALUE;
+    private Set<String> modifications;
     protected Writer writer;
     private boolean hasWritternHeader = false;
 
@@ -85,6 +92,43 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
         if (cluster.getMaxRatio() < minClusterRatio)
             return true;
 
+        // test for modifications
+        if (modifications != null && modifications.size() > 0) {
+            boolean clusterHasMod = false;
+            for (String modification : modifications) {
+                clusterHasMod = clusterHasMod || hasPrimarySequenceMod(cluster, modification);
+                if (clusterHasMod)
+                    break;
+            }
+
+            // ignore the cluster if it doesn't have any of the mods
+            if (!clusterHasMod)
+                return true;
+        }
+
+        return false;
+    }
+
+    public static boolean hasPrimarySequenceMod(ICluster cluster, String modification) {
+        Set<String> modificationAccessions = ModificationMapper.getInstance().getAccessionsForMapping(modification);
+
+        // get the most common sequence
+        ClusterUtilities clusterUtils = new ClusterUtilities(cluster);
+        String maxSequence = clusterUtils.getMaxSequence();
+
+        for (ISpectrumReference specRef : cluster.getSpectrumReferences()) {
+            for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {
+                // only apply to the most common sequence
+                if (!maxSequence.equals(psm.getSequence()))
+                    continue;
+
+                for (IModification mod : psm.getModifications()) {
+                    if (modificationAccessions.contains(mod.getAccession()))
+                        return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -115,5 +159,13 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
 
     public void setWriter(Writer writer) {
         this.writer = writer;
+    }
+
+    public Set<String> getModifications() {
+        return modifications;
+    }
+
+    public void setModifications(Set<String> modifications) {
+        this.modifications = modifications;
     }
 }

@@ -19,6 +19,7 @@ public class CliOptions {
         MAX_RATIO("max_ratio"),
         MIN_PRECURSOR("min_precursor"),
         MAX_PRECURSOR("max_precurosr"),
+        MODIFICATION("modification"),
         EXTRACT_SPECTA("extract_spectra"),
         HELP("help");
 
@@ -112,6 +113,13 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.EXTRACT_SPECTA.getValue());
         options.addOption(extractSpectra);
+
+        Option modification = OptionBuilder
+                .withArgName("modification name")
+                .hasArg()
+                .withDescription("only reports clusters where the most common sequence was identified with any of the specified modifications. This parameter may be set multiple times.")
+                .create(OPTIONS.MODIFICATION.getValue());
+        options.addOption(modification);
 
 		Option help = OptionBuilder
                 .withDescription("print this help.")

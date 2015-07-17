@@ -57,6 +57,12 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()))
                 maxPrecursor = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()));
 
+            Set<String> modifications = new HashSet<String>();
+            if (commandLine.hasOption(CliOptions.OPTIONS.MODIFICATION.getValue())) {
+                for (String mod : commandLine.getOptionValues(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()))
+                    modifications.add(mod);
+            }
+
             // CUMULATIVE
             boolean cumulativeAnalysis = commandLine.hasOption(CliOptions.OPTIONS.CUMULATIVE_ANALYSIS.getValue());
 
