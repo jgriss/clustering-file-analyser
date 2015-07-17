@@ -7,6 +7,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.ClusteringFileRead
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -24,12 +25,18 @@ public class ProjectAnalyserTest {
     public void testProjectAnalysis() throws Exception {
         ProjectAnalyser analyser = new ProjectAnalyser();
 
+        StringWriter writer = new StringWriter();
+        analyser.setWriter(writer);
+
         ClusteringFileReader clusteringFileReader = new ClusteringFileReader(testFile);
         List<ICluster> clusters = clusteringFileReader.readAllClusters();
 
         for (ICluster c : clusters) {
             analyser.onNewClusterRead(c);
         }
+
+        analyser.completeResultFile();
+        writer.close();
 
         Assert.assertEquals("project\tcorrect_ids\tincorrect_ids\tcorrect_contam\tincorrect_contam\n" +
                 "PRD000073\t4\t0\t0\t0\n" +
@@ -43,6 +50,6 @@ public class ProjectAnalyserTest {
                 "PRD000044\t2\t0\t0\t0\n" +
                 "PRD000397\t1\t0\t0\t0\n" +
                 "PRD000562\t1\t0\t0\t0\n" +
-                "PRD000097\t5\t0\t0\t0\n", analyser.getAnalysisResultString());
+                "PRD000097\t5\t0\t0\t0\n", writer.toString());
     }
 }

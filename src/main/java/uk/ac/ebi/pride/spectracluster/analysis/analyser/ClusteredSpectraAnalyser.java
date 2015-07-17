@@ -27,10 +27,14 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
     }
 
     @Override
-    public String getAnalysisResultString() {
-        StringBuilder resultString = new StringBuilder(
-                "min_cluster_size\tclustered_spectra\ttotal_cluster_size\tn_clusters\t" +
-                        "mixed_clusters\tincorrectly_assigned_spectra\ttotal_spectra\n");
+    protected String getResultFileHeader() {
+        return "min_cluster_size\tclustered_spectra\ttotal_cluster_size\tn_clusters\t" +
+                        "mixed_clusters\tincorrectly_assigned_spectra\ttotal_spectra\n";
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
+        StringBuilder resultString = new StringBuilder();
 
         for (Integer minSize : clusteredSpectraCounts.keySet()) {
             resultString.append(minSize)
@@ -49,7 +53,7 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
                     .append("\n");
         }
 
-        return resultString.toString();
+        writer.write(resultString.toString());
     }
 
     @Override
@@ -74,7 +78,7 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         for (int minSize : MIN_CLUSTER_SIZES) {
             if (newCluster.getSpecCount() < minSize)
                 continue;

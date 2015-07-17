@@ -21,7 +21,6 @@ public class IdentifiedClusterParameterExtractor extends AbstractClusteringSourc
     public static String FILE_ENDING = ".id.cluster_parameters.tsv";
     public static String DESCRIPTION = "Extracts the basic properties of every cluster in the file and returns them in a TAB delimited table.";
 
-    StringBuffer resultStringBuffer = new StringBuffer();
     public final char DELIMINATOR = '\t';
     public final String TABLE_HEADER=
                     "id" + DELIMINATOR +
@@ -53,21 +52,25 @@ public class IdentifiedClusterParameterExtractor extends AbstractClusteringSourc
         return DESCRIPTION;
     }
 
+
+
     @Override
-    public String getAnalysisResultString() {
-        return TABLE_HEADER + resultStringBuffer.toString();
+    protected String getResultFileHeader() {
+        return TABLE_HEADER;
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
+
     }
 
     @Override
     public void reset() {
-        resultStringBuffer = new StringBuffer();
+
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
-        if (ignoreCluster(newCluster))
-            return;
-
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         List<SequenceCount> sequenceCounts = new ArrayList<SequenceCount>(getSequenceCounts(newCluster).values());
         Collections.sort(sequenceCounts);
         Collections.reverse(sequenceCounts);
@@ -109,7 +112,7 @@ public class IdentifiedClusterParameterExtractor extends AbstractClusteringSourc
         int maxIlAgnosticCount = getMaxIlAgnosticCount(sequenceCounts);
 
         // add the string representing the cluster to the result buffer
-        resultStringBuffer.append(
+        writer.write(
                 newCluster.getId() + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorMz()) + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorIntens()) + DELIMINATOR +

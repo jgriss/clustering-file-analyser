@@ -13,6 +13,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.ClusteringFileRead
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceListener;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceReader;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashSet;
@@ -144,6 +145,13 @@ public class ClusteringFileAnalyserCli {
 
         File outputFilename = new File(outputPath);
 
+        // create the writers
+        for (AbstractClusteringSourceAnalyser theAnalyser : analyser) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilename + theAnalyser.getFileEnding()));
+            theAnalyser.setWriter(writer);
+        }
+
+        // process the clustering files
         Set<IClusterSourceListener> listener = new HashSet<IClusterSourceListener>(analyser);
 
         for (String filename : filenames) {
@@ -156,18 +164,10 @@ public class ClusteringFileAnalyserCli {
             reader.readClustersIteratively(listener);
         }
 
-        // save the results
-        for (IClusteringSourceAnalyser theAnalyser : analyser) {
-            // get the result
-            String resultString = theAnalyser.getAnalysisResultString();
-
-            if (resultString == null)
-                continue;
-
-            // write the result
-            FileWriter writer = new FileWriter(outputFilename + theAnalyser.getFileEnding());
-            writer.write(resultString);
-            writer.close();
+        // close the result files
+        for (AbstractClusteringSourceAnalyser theAnalyser : analyser) {
+            theAnalyser.completeResultFile();
+            theAnalyser.getWriter().close();
 
             System.out.println("  Result written to " + outputFilename + theAnalyser.getFileEnding());
         }
@@ -191,6 +191,12 @@ public class ClusteringFileAnalyserCli {
                     throw new IllegalStateException(outputPath + " is not a directory.");
             }
 
+            // create the result files
+            for (AbstractClusteringSourceAnalyser theAnalyser : analyser) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(resultFilePath + theAnalyser.getFileEnding()));
+                theAnalyser.setWriter(writer);
+            }
+
             // add all analysers
             Set<IClusterSourceListener> listener = new HashSet<IClusterSourceListener> (analyser);
 
@@ -205,17 +211,9 @@ public class ClusteringFileAnalyserCli {
             reader.readClustersIteratively(listener);
 
             // save the results
-            for (IClusteringSourceAnalyser theAnalyser : analyser) {
-                // get the result
-                String resultString = theAnalyser.getAnalysisResultString();
-
-                if (resultString == null)
-                    continue;
-
-                // write the result
-                FileWriter writer = new FileWriter(resultFilePath + theAnalyser.getFileEnding());
-                writer.write(resultString);
-                writer.close();
+            for (AbstractClusteringSourceAnalyser theAnalyser : analyser) {
+                theAnalyser.completeResultFile();
+                theAnalyser.getWriter().close();
 
                 System.out.println("  Result written to " + resultFilePath + theAnalyser.getFileEnding());
             }

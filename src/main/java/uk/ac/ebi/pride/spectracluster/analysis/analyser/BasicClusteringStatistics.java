@@ -54,10 +54,7 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
-        if (ignoreCluster(newCluster))
-            return;
-
+    public void processClusterInternally(ICluster newCluster) {
         nClusters++;
 
         if (minSize > newCluster.getSpecCount())
@@ -124,7 +121,12 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
     }
 
     @Override
-    public String getAnalysisResultString() {
+    protected String getResultFileHeader() {
+        return "";
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
         String resultString = String.format("Number of clusters: %.0f (%d with 1 spec)\n" +
                         "Average maximum ratio: %.3f\n" +
                         "Average cluster size: %.3f\n" +
@@ -145,7 +147,7 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
             resultString += "Species " + species + ": " + speciesCounts.get(species) + "\n";
         }
 
-        return resultString;
+        writer.write(resultString);
     }
 
     @Override

@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceList
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceReader;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,17 @@ public class TestClusteredSpectraAnalyser {
     public void testAnalysis() throws Exception {
         ClusteredSpectraAnalyser clusteredSpectraAnalyser = new ClusteredSpectraAnalyser();
 
+        StringWriter writer = new StringWriter();
+        clusteredSpectraAnalyser.setWriter(writer);
+
         List<IClusterSourceListener> analysers = new ArrayList<IClusterSourceListener>(1);
         analysers.add(clusteredSpectraAnalyser);
 
         reader.readClustersIteratively(analysers);
 
-        String resultString = clusteredSpectraAnalyser.getAnalysisResultString();
+        clusteredSpectraAnalyser.completeResultFile();
+        writer.close();
+        String resultString = writer.toString();
 
         Assert.assertEquals("min_cluster_size\tclustered_spectra\ttotal_cluster_size\tn_clusters\tmixed_clusters\tincorrectly_assigned_spectra\ttotal_spectra\n" +
                 "1\t7234\t8927\t960\t322\t4203\t8927\n" +

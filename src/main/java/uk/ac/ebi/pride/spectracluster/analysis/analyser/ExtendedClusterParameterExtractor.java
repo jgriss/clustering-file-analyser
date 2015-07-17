@@ -23,7 +23,6 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
 
     private ClusterUtilities clusterUtilities = new ClusterUtilities();
 
-    StringBuffer resultStringBuffer = new StringBuffer();
     public final char DELIMINATOR = '\t';
     public final String TABLE_HEADER=
                     "id" + DELIMINATOR +
@@ -62,20 +61,22 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
     }
 
     @Override
-    public String getAnalysisResultString() {
-        return TABLE_HEADER + resultStringBuffer.toString();
+    protected String getResultFileHeader() {
+        return TABLE_HEADER;
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
+
     }
 
     @Override
     public void reset() {
-        resultStringBuffer = new StringBuffer();
+
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
-        if (ignoreCluster(newCluster))
-            return;
-
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         clusterUtilities.processCluster(newCluster);
 
         // build the sequence string
@@ -109,7 +110,7 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
         String thirdContam = clusterUtilities.getThirdMaxSequence() != null ? CrapFastaFile.getInstance().getProteinAnnotation(clusterUtilities.getThirdMaxSequence()): "";
 
         // add the string representing the cluster to the result buffer
-        resultStringBuffer.append(
+        writer.write(
                 newCluster.getId() + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorMz()) + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorIntens()) + DELIMINATOR +

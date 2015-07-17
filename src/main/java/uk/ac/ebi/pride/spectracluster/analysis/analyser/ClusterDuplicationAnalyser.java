@@ -33,7 +33,12 @@ public class ClusterDuplicationAnalyser extends AbstractClusteringSourceAnalyser
     }
 
     @Override
-    public String getAnalysisResultString() {
+    protected String getResultFileHeader() {
+        return "";
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
         Map<Integer, Integer> countFrequency = new HashMap<Integer, Integer>();
 
         for (Integer count : specIdCounts.values()) {
@@ -53,7 +58,7 @@ public class ClusterDuplicationAnalyser extends AbstractClusteringSourceAnalyser
                     countFrequency.get(count)));
         }
 
-        return stringBuilder.toString();
+        writer.write(stringBuilder.toString());
     }
 
     /**
@@ -91,10 +96,7 @@ public class ClusterDuplicationAnalyser extends AbstractClusteringSourceAnalyser
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
-        if (ignoreCluster(newCluster))
-            return;
-
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         for (ISpectrumReference specRef : newCluster.getSpectrumReferences()) {
             String id = specRef.getSpectrumId();
 

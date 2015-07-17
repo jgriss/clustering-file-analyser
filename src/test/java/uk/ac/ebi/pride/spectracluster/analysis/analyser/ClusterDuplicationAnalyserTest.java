@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceList
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceReader;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,17 @@ public class ClusterDuplicationAnalyserTest {
     public void testAnalysis() throws Exception {
         ClusterDuplicationAnalyser analyzer = new ClusterDuplicationAnalyser();
 
+        StringWriter writer = new StringWriter();
+        analyzer.setWriter(writer);
+
         List<IClusterSourceListener> listeners = new ArrayList<IClusterSourceListener>(1);
         listeners.add(analyzer);
 
         reader.readClustersIteratively(listeners);
 
-        String result = analyzer.getAnalysisResultString();
+        analyzer.completeResultFile();
+        writer.close();
+        String result = writer.toString();
 
         Assert.assertEquals("count\tfrequency\n" +
                 "1\t5990\n" +

@@ -26,8 +26,13 @@ public class SpectrumExtractor extends AbstractClusteringSourceAnalyser {
     private final static PeakMzComparator peakMzComparator = new PeakMzComparator();
 
     @Override
-    public String getAnalysisResultString() {
-        return null;
+    protected String getResultFileHeader() {
+        return "";
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
+
     }
 
     @Override
@@ -55,7 +60,7 @@ public class SpectrumExtractor extends AbstractClusteringSourceAnalyser {
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         try {
             // enable cluster filtering
             if (ignoreCluster(newCluster))

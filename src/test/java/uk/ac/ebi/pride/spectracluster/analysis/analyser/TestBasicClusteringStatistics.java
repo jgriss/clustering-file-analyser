@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceList
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceReader;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,17 @@ public class TestBasicClusteringStatistics {
     public void testAnalysis() throws Exception {
         BasicClusteringStatistics basicStat = new BasicClusteringStatistics();
 
+        StringWriter writer = new StringWriter();
+        basicStat.setWriter(writer);
+
         List<IClusterSourceListener> analysers = new ArrayList<IClusterSourceListener>(1);
         analysers.add(basicStat);
 
         reader.readClustersIteratively(analysers);
 
-        String simpleStat = basicStat.getAnalysisResultString();
+        basicStat.completeResultFile();
+        writer.close();
+        String simpleStat = writer.toString();
 
         Assert.assertEquals(
                 "Number of clusters: 960 (256 with 1 spec)\n" +

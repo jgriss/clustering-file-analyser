@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceList
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceReader;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -32,12 +33,18 @@ public class ClusterParameterExtractorTest {
     public void testParameterExtractor() throws Exception {
         ClusterParameterExtractor parameterExtractor = new ClusterParameterExtractor();
 
+        StringWriter writer = new StringWriter();
+        parameterExtractor.setWriter(writer);
+
         ArrayList<IClusterSourceListener> listeners = new ArrayList<IClusterSourceListener>(1);
         listeners.add(parameterExtractor);
 
         reader.readClustersIteratively(listeners);
 
-        String resultString = parameterExtractor.getAnalysisResultString();
+        parameterExtractor.completeResultFile();
+        writer.close();
+
+        String resultString = writer.toString();
 
         String[] lines = resultString.split("\n");
 

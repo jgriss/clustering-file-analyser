@@ -24,8 +24,13 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
     private Map<String, ProjectProperties> projectPropertiesMap = new HashMap<String, ProjectProperties>();
 
     @Override
-    public String getAnalysisResultString() {
-        StringBuilder stringBuilder = new StringBuilder("project\tcorrect_ids\tincorrect_ids\tcorrect_contam\tincorrect_contam\n");
+    protected String getResultFileHeader() {
+        return "project\tcorrect_ids\tincorrect_ids\tcorrect_contam\tincorrect_contam\n";
+    }
+
+    @Override
+    public void completeResultFile() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
 
         for (String project : projectPropertiesMap.keySet()) {
             ProjectProperties properties = projectPropertiesMap.get(project);
@@ -42,7 +47,7 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
                     .append("\n");
         }
 
-        return stringBuilder.toString();
+        writer.write(stringBuilder.toString());
     }
 
     @Override
@@ -61,10 +66,7 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
     }
 
     @Override
-    public void onNewClusterRead(ICluster newCluster) {
-        if (ignoreCluster(newCluster))
-            return;
-
+    protected void processClusterInternally(ICluster newCluster) throws Exception {
         clusterUtilities.processCluster(newCluster);
 
         // only process reliable clusters

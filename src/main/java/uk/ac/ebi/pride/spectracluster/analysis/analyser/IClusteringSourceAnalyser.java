@@ -6,11 +6,15 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceList
  * Created by jg on 12.07.14.
  */
 public interface IClusteringSourceAnalyser extends IClusterSourceListener {
-    public String getAnalysisResultString();
-
     public void reset();
 
     public String getFileEnding();
 
     public String getDescription();
+
+    /**
+     * Writes the file ending to the result
+     * file.
+     */
+    public void completeResultFile() throws Exception ;
 }
