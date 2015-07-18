@@ -127,7 +127,8 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
                     continue;
 
                 if (psm.getModifications().size() > modifications.size()) {
-                    modifications = psm.getModifications();
+                    modifications.clear();
+                    modifications.addAll(psm.getModifications());
                 }
             }
         }
