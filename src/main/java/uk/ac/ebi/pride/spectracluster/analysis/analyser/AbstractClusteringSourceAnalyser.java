@@ -22,6 +22,7 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
     private float minPrecursorMz = Float.MIN_VALUE;
     private float maxPrecursorMz = Float.MAX_VALUE;
     private Set<String> modifications;
+    private Set<String> species;
     protected Writer writer;
     private boolean hasWritternHeader = false;
 
@@ -106,6 +107,41 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
                 return true;
         }
 
+        // test for species
+        if (species != null && species.size() > 0) {
+            boolean clusterHasSpecies = false;
+            for (String s : species) {
+                clusterHasSpecies = clusterHasSpecies || hasPrimarySpecies(cluster, s);
+                if (clusterHasSpecies)
+                    break;
+            }
+
+            // ignore the cluster if it doesn't have any of the mods
+            if (!clusterHasSpecies)
+                return true;
+        }
+
+        return false;
+    }
+
+    protected boolean hasPrimarySpecies(ICluster cluster, String species) {
+        ClusterUtilities clusterUtils = new ClusterUtilities(cluster);
+
+        for (ISpectrumReference specRef : cluster.getSpectrumReferences()) {
+            for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {
+                if (!clusterUtils.getMaxSequence().equals(psm.getSequence()))
+                    continue;
+
+                String[] specRefSpecies = specRef.getSpecies().split(",");
+                for (String clusterSpecies : specRefSpecies) {
+                    if (species.equals(clusterSpecies))
+                        return true;
+                }
+
+                break; // only process every specRef once
+            }
+        }
+
         return false;
     }
 
@@ -167,5 +203,13 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
 
     public void setModifications(Set<String> modifications) {
         this.modifications = modifications;
+    }
+
+    public Set<String> getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(Set<String> species) {
+        this.species = species;
     }
 }

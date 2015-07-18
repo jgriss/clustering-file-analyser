@@ -22,6 +22,7 @@ public class CliOptions {
         MODIFICATION("modification"),
         EXTRACT_SPECTA("extract_spectra"),
         LIST_MODIFICATIONS("list_modifications"),
+        SPECIES("species"),
         HELP("help");
 
 		private String value;
@@ -126,6 +127,13 @@ public class CliOptions {
                 .withDescription("lists the available modifications.")
                 .create(OPTIONS.LIST_MODIFICATIONS.getValue());
         options.addOption(listModifications);
+
+        Option species = OptionBuilder
+               .withArgName("taxid")
+               .hasArg()
+                .withDescription("if set only cluster where the most common sequence was identified for the specied species are reported. The parameter may be specified multiple times.")
+                .create(OPTIONS.SPECIES.getValue());
+        options.addOption(species);
 
 		Option help = OptionBuilder
                 .withDescription("print this help.")

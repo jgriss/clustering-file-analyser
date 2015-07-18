@@ -62,6 +62,12 @@ public class ClusteringFileAnalyserCli {
                     modifications.add(mod);
             }
 
+            Set<String> species = new HashSet<String>();
+            if (commandLine.hasOption(CliOptions.OPTIONS.SPECIES.getValue())) {
+                for (String s : commandLine.getOptionValues(CliOptions.OPTIONS.SPECIES.getValue()))
+                    species.add(s);
+            }
+
             // CUMULATIVE
             boolean cumulativeAnalysis = commandLine.hasOption(CliOptions.OPTIONS.CUMULATIVE_ANALYSIS.getValue());
 
@@ -129,6 +135,7 @@ public class ClusteringFileAnalyserCli {
                 theAnalyser.setMaxPrecursorMz(maxPrecursor);
 
                 theAnalyser.setModifications(modifications);
+                theAnalyser.setSpecies(species);
             }
 
             // OUTPUT PATH
