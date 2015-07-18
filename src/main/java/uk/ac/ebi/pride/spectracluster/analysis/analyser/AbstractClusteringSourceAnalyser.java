@@ -128,6 +128,9 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
         ClusterUtilities clusterUtils = new ClusterUtilities(cluster);
 
         for (ISpectrumReference specRef : cluster.getSpectrumReferences()) {
+            if (specRef.getSpecies() == null)
+                continue;
+
             for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {
                 if (!clusterUtils.getMaxSequence().equals(psm.getSequence()))
                     continue;
