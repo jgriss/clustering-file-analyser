@@ -21,6 +21,7 @@ public class CliOptions {
         MAX_PRECURSOR("max_precurosr"),
         MODIFICATION("modification"),
         EXTRACT_SPECTA("extract_spectra"),
+        LIST_MODIFICATIONS("list_modifications"),
         HELP("help");
 
 		private String value;
@@ -120,6 +121,11 @@ public class CliOptions {
                 .withDescription("only reports clusters where the most common sequence was identified with any of the specified modifications. This parameter may be set multiple times.")
                 .create(OPTIONS.MODIFICATION.getValue());
         options.addOption(modification);
+
+        Option listModifications = OptionBuilder
+                .withDescription("lists the available modifications.")
+                .create(OPTIONS.LIST_MODIFICATIONS.getValue());
+        options.addOption(listModifications);
 
 		Option help = OptionBuilder
                 .withDescription("print this help.")

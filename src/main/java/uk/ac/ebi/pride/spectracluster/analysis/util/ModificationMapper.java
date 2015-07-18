@@ -73,4 +73,8 @@ public class ModificationMapper {
     public Set<String> getAccessionsForMapping(String mapping) {
         return Collections.unmodifiableSet(mappings.get(mapping));
     }
+
+    public Set<String> getAvailableModifications() {
+        return mappings.keySet();
+    }
 }

@@ -6,8 +6,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import uk.ac.ebi.pride.spectracluster.analysis.analyser.AbstractClusteringSourceAnalyser;
 import uk.ac.ebi.pride.spectracluster.analysis.analyser.AnalyserFactory;
-import uk.ac.ebi.pride.spectracluster.analysis.analyser.IClusteringSourceAnalyser;
 import uk.ac.ebi.pride.spectracluster.analysis.io.MsClusterFileReader;
+import uk.ac.ebi.pride.spectracluster.analysis.util.ModificationMapper;
 import uk.ac.ebi.pride.spectracluster.analysis.util.SpectrumExtractor;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.ClusteringFileReader;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceListener;
@@ -16,8 +16,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceRead
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jg on 15.07.14.
@@ -69,6 +68,12 @@ public class ClusteringFileAnalyserCli {
             // LIST ANALYSER
             if (commandLine.hasOption(CliOptions.OPTIONS.LIST_ANALYSERS.getValue())) {
                 listAnalyser();
+                return;
+            }
+
+            // LIST MODIFICATIONS
+            if (commandLine.hasOption(CliOptions.OPTIONS.LIST_MODIFICATIONS.getValue())) {
+                listModifications();
                 return;
             }
 
@@ -142,6 +147,17 @@ public class ClusteringFileAnalyserCli {
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    private static void listModifications() {
+        System.out.println("Available modifications:");
+        Set<String> mods = ModificationMapper.getInstance().getAvailableModifications();
+        List<String> sortedMods = new ArrayList<String>(mods);
+        Collections.sort(sortedMods);
+
+        for (String mod : sortedMods) {
+            System.out.println("- " + mod);
         }
     }
 
