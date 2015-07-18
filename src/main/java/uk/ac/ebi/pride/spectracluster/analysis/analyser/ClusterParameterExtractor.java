@@ -1,8 +1,11 @@
 package uk.ac.ebi.pride.spectracluster.analysis.analyser;
 
 import uk.ac.ebi.pride.spectracluster.analysis.util.ClusterUtilities;
-import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster;
-import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.SequenceCount;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by jg on 14.07.14.
@@ -29,6 +32,7 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
                     "sequences" + DELIMINATOR +
                     "max_sequence" + DELIMINATOR +
                     "max_sequence_count" + DELIMINATOR +
+                    "max_sequence_mods" + DELIMINATOR +
                     "second_max_sequence" + DELIMINATOR +
                     "second_max_sequence_count" + DELIMINATOR +
                     "project_count" + DELIMINATOR +
@@ -88,6 +92,9 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
             speciesString.append(species);
         }
 
+        // get the max sequence ptms
+        String maxSequencePtms = extractMaxSequencePtms(clusterUtilities, newCluster);
+
         // add the string representing the cluster to the result buffer
        writer.write(
                 newCluster.getId() + DELIMINATOR +
@@ -100,11 +107,43 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
                 sequenceString.toString() + DELIMINATOR +
                 clusterUtilities.getMaxSequence() + DELIMINATOR +
                 clusterUtilities.getMaxSequenceCount() + DELIMINATOR +
+                maxSequencePtms + DELIMINATOR +
                 clusterUtilities.getSecondMaxSequence() + DELIMINATOR +
                 clusterUtilities.getSecondMaxSequenceCount() + DELIMINATOR +
                 clusterUtilities.getnProjects() + DELIMINATOR +
                 clusterUtilities.getnAssays() + DELIMINATOR +
                 speciesString.toString() + "\n"
         );
+    }
+
+    private String extractMaxSequencePtms(ClusterUtilities clusterUtilities, ICluster newCluster) {
+        String maxSequence = clusterUtilities.getMaxSequence();
+        List<IModification> modifications = new ArrayList<IModification>();
+
+
+        for (ISpectrumReference specRef : newCluster.getSpectrumReferences()) {
+            for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {
+                if (!maxSequence.equals(psm.getSequence()))
+                    continue;
+
+                if (psm.getModifications().size() > modifications.size()) {
+                    modifications = psm.getModifications();
+                }
+            }
+        }
+
+        // create the modification string
+        Collections.sort(modifications);  // sorts according to position
+
+        StringBuilder modStringBuilder = new StringBuilder();
+
+        for (IModification mod : modifications) {
+            if (modStringBuilder.length() > 0)
+                modStringBuilder.append(",");
+
+            modStringBuilder.append(String.valueOf(mod.getPosition())).append("+").append(mod.getAccession());
+        }
+
+        return modStringBuilder.toString();
     }
 }

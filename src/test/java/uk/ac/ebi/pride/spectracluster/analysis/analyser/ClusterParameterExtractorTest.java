@@ -49,7 +49,7 @@ public class ClusterParameterExtractorTest {
         String[] lines = resultString.split("\n");
 
         Assert.assertEquals(961, lines.length);
-        Assert.assertEquals("null\t305.000\t1.000\t2\t1.000\t1.000\t0.000\tYIAHLPAK:2\tYIAHLPAK\t2\tnull\t0\t1\t1\t", lines[1]);
-        Assert.assertEquals("null\t305.010\t1.000\t1\t1.000\t1.000\t0.000\tKNYGK:1\tKNYGK\t1\tnull\t0\t1\t1\t", lines[11]);
+        Assert.assertEquals("null\t305.000\t1.000\t2\t1.000\t1.000\t0.000\tYIAHLPAK:2\tYIAHLPAK\t2\t\tnull\t0\t1\t1\t", lines[1]);
+        Assert.assertEquals("null\t305.010\t1.000\t1\t1.000\t1.000\t0.000\tKNYGK:1\tKNYGK\t1\t\tnull\t0\t1\t1\t", lines[11]);
     }
 }
