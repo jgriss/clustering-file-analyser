@@ -1,8 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.analysis.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -19,9 +17,9 @@ public class ModificationMapper {
 
     private ModificationMapper() {
         try {
-            File mappingFile = new File(ModificationMapper.class.getClassLoader().getResource("ModificationMappings.txt").getFile());
+            InputStream inputStream = ModificationMapper.class.getClassLoader().getResourceAsStream("ModificationMappings.txt");
 
-            BufferedReader reader = new BufferedReader(new FileReader(mappingFile));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             Map<String, Set<String>> fileMappings = new HashMap<String, Set<String>>();
