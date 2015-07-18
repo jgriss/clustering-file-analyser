@@ -93,11 +93,17 @@ public class ClusterUtilities {
         // calculate the average charge
         int sumCharge = 0;
 
+        int nValidSpecRefs = 0;
+
         for (ISpectrumReference specRef : cluster.getSpectrumReferences()) {
+            if (specRef.getCharge() < 1)
+                continue;
+
+            nValidSpecRefs++;
             sumCharge += specRef.getCharge();
         }
 
-        float avCharge = (float) sumCharge / (float) cluster.getSpectrumReferences().size();
+        float avCharge = (float) sumCharge / (float) nValidSpecRefs;
         int avChargeRounded = (int) (avCharge + 0.5);
 
         return avChargeRounded;
