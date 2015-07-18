@@ -58,7 +58,7 @@ public class ClusteringFileAnalyserCli {
 
             Set<String> modifications = new HashSet<String>();
             if (commandLine.hasOption(CliOptions.OPTIONS.MODIFICATION.getValue())) {
-                for (String mod : commandLine.getOptionValues(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()))
+                for (String mod : commandLine.getOptionValues(CliOptions.OPTIONS.MODIFICATION.getValue()))
                     modifications.add(mod);
             }
 
