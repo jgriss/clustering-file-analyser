@@ -18,7 +18,7 @@ public class ConsensusSpectrumExtractor extends AbstractClusteringSourceAnalyser
 
         StringBuilder stringBuilder = new StringBuilder("BEGIN IONS\n");
 
-        stringBuilder.append(String.format("TITLE=%s\n", (newCluster.getId() != null) ? newCluster.getId() : clusterUtilities.getMaxSequence(), clusterCounter));
+        stringBuilder.append(String.format("TITLE=%s\n", (newCluster.getId() != null ? newCluster.getId() + ",sequence=" : "") + clusterUtilities.getMaxSequence(), clusterCounter));
         int charge = clusterUtilities.getCharge();
         stringBuilder.append(String.format("PEPMASS=%.3f\n", newCluster.getAvPrecursorMz()));
         stringBuilder.append(String.format("CHARGE=%d%c\n", Math.abs(charge), (charge > 0 ? '+' : '-')));
