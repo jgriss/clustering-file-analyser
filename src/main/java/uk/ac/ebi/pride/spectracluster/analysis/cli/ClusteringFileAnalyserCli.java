@@ -127,6 +127,8 @@ public class ClusteringFileAnalyserCli {
 
                 theAnalyser.setMinPrecursorMz(minPrecursor);
                 theAnalyser.setMaxPrecursorMz(maxPrecursor);
+
+                theAnalyser.setModifications(modifications);
             }
 
             // OUTPUT PATH

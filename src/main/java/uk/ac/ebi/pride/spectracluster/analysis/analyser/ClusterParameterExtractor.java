@@ -142,7 +142,7 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
             if (modStringBuilder.length() > 0)
                 modStringBuilder.append(",");
 
-            modStringBuilder.append(String.valueOf(mod.getPosition())).append("+").append(mod.getAccession());
+            modStringBuilder.append(String.valueOf(mod.getPosition())).append("-").append(mod.getAccession());
         }
 
         return modStringBuilder.toString();
