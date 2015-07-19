@@ -25,7 +25,8 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
 
     @Override
     protected String getResultFileHeader() {
-        return "project\tcorrect_ids\tincorrect_ids\tcorrect_contam\tincorrect_contam\n";
+        return "project\tcorrect_ids\tincorrect_ids\tcorrect_contam\tincorrect_contam\t" +
+                "correct_psms\tincorrect_psms\tcorrect_contam_psms\tincorrect_contam_psms\n";
     }
 
     @Override
@@ -44,6 +45,14 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
                     .append(String.valueOf(properties.getCorrectContam()))
                     .append("\t")
                     .append(String.valueOf(properties.getIncorrectContam()))
+                    .append("\t")
+                    .append(String.valueOf(properties.getCorrectPSMs()))
+                    .append("\t")
+                    .append(String.valueOf(properties.getIncorrectPSMs()))
+                    .append("\t")
+                    .append(String.valueOf(properties.getCorrectContamPsms()))
+                    .append("\t")
+                    .append(String.valueOf(properties.getIncorrectContamPsms()))
                     .append("\n");
         }
 
@@ -123,6 +132,43 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
             if (isContaminant)
                 projectProperties.incrementIncorrectContam();
         }
+
+        // save everything again, only this time per PSM
+        String correctSequence = clusterUtilities.getMaxSequence().replaceAll("I", "L");
+        for (ISpectrumReference specRef : newCluster.getSpectrumReferences()) {
+            boolean isCorrect = false;
+
+            for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {
+                if (psm.getSequence().replaceAll("I", "L").equals(correctSequence)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+
+            // get the project
+            int index = specRef.getSpectrumId().indexOf(";");
+            if (index < 0)
+                continue;
+
+            String projectId = specRef.getSpectrumId().substring(0, index);
+
+            // the project should already exist
+            if (!projectPropertiesMap.containsKey(projectId))
+                projectPropertiesMap.put(projectId, new ProjectProperties());
+
+            ProjectProperties projectProperties = projectPropertiesMap.get(projectId);
+
+            if (isCorrect) {
+                projectProperties.incrementCorrectPSMs();
+                if (isContaminant)
+                    projectProperties.incrementCorrectContamPSMs();
+            }
+            else {
+                projectProperties.incrementIncorrectPSMs();
+                if (isContaminant)
+                    projectProperties.incrementIncorrectContamPSMs();
+            }
+        }
     }
 
     private Map<String, Integer> makeSequenceCountsIlAgnostic(Map<String, Integer> sequenceCounts) {
@@ -169,10 +215,22 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
     }
 
     public class ProjectProperties {
+        /**
+         * These count the number of
+         * clusters
+         */
         private int correctIds = 0;
         private int incorrectIds = 0;
         private int correctContam = 0;
         private int incorrectContam = 0;
+
+        /**
+         * These count the number of actual spectra
+         */
+        private int correctPSMs = 0;
+        private int incorrectPSMs = 0;
+        private int correctContamPsms = 0;
+        private int incorrectContamPsms = 0;
 
         public void incrementCorrectIds() {
             correctIds++;
@@ -190,6 +248,22 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
             incorrectContam++;
         }
 
+        public void incrementCorrectPSMs() {
+            correctPSMs++;
+        }
+
+        public void incrementIncorrectPSMs() {
+            incorrectPSMs++;
+        }
+
+        public void incrementCorrectContamPSMs() {
+            correctContamPsms++;
+        }
+
+        public void incrementIncorrectContamPSMs() {
+            incorrectContamPsms++;
+        }
+
         public int getCorrectIds() {
             return correctIds;
         }
@@ -204,6 +278,22 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
 
         public int getIncorrectContam() {
             return incorrectContam;
+        }
+
+        public int getCorrectPSMs() {
+            return correctPSMs;
+        }
+
+        public int getIncorrectPSMs() {
+            return incorrectPSMs;
+        }
+
+        public int getCorrectContamPsms() {
+            return correctContamPsms;
+        }
+
+        public int getIncorrectContamPsms() {
+            return incorrectContamPsms;
         }
     }
 }
