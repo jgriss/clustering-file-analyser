@@ -27,6 +27,8 @@ public class IdentifiedClusterParameterExtractor extends AbstractClusteringSourc
                     "precursor_mz" + DELIMINATOR +
                     "precursor_intensity" + DELIMINATOR +
                     "size" + DELIMINATOR +
+                    "identified_spec_count" + DELIMINATOR +
+                    "unidentified_spec_count" + DELIMINATOR +
                     "max_ratio" + DELIMINATOR +
                     "max_il_ratio" + DELIMINATOR +
                     "precursor_mz_range" + DELIMINATOR +
@@ -117,6 +119,8 @@ public class IdentifiedClusterParameterExtractor extends AbstractClusteringSourc
                 String.format("%.3f", newCluster.getAvPrecursorMz()) + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorIntens()) + DELIMINATOR +
                 size + DELIMINATOR +
+                newCluster.getIdentifiedSpecCount() + DELIMINATOR +
+                newCluster.getUnidentifiedSpecCount() + DELIMINATOR +
                 String.format("%.3f", maxRatio) + DELIMINATOR +
                 String.format("%.3f", (float) maxIlAgnosticCount / size) + DELIMINATOR +
                 String.format("%.3f", calculateMzRange(newCluster)) + DELIMINATOR +

@@ -48,6 +48,9 @@ public class TestBasicClusteringStatistics {
 
         Assert.assertEquals(
                 "Number of clusters: 960 (256 with 1 spec)\n" +
+                        "All identified clusters: 704\n" +
+                        "All unidentified clusters: 0\n" +
+                        "Mixed clusters: 0\n" +
                         "Average maximum ratio: 0.760\n" +
                         "Average cluster size: 12.173\n" +
                         "Minimum size: 1\n" +

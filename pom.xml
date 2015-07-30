@@ -57,7 +57,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.spectracluster</groupId>
             <artifactId>clustering-file-reader</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.3-20150730.080319-4</version>
         </dependency>
     </dependencies>
 

@@ -203,4 +203,13 @@ public class MsClusterCluster implements ICluster {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public int getIdentifiedSpecCount() {
+        return spectra.size();
+    }
+
+    @Override
+    public int getUnidentifiedSpecCount() {
+        return 0;
+    }
 }

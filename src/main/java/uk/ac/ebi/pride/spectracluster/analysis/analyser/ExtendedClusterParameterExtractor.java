@@ -28,6 +28,8 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
                     "id" + DELIMINATOR +
                     "precursor_mz" + DELIMINATOR +
                     "size" + DELIMINATOR +
+                    "identified_spec_count" + DELIMINATOR +
+                    "unidentified_spec_count" + DELIMINATOR +
                     "max_ratio" + DELIMINATOR +
                     "max_il_ratio" + DELIMINATOR +
                     "precursor_mz_range" + DELIMINATOR +
@@ -115,6 +117,8 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
                 String.format("%.3f", newCluster.getAvPrecursorMz()) + DELIMINATOR +
                 String.format("%.3f", newCluster.getAvPrecursorIntens()) + DELIMINATOR +
                 newCluster.getSpecCount() + DELIMINATOR +
+                newCluster.getIdentifiedSpecCount() + DELIMINATOR +
+                newCluster.getUnidentifiedSpecCount() + DELIMINATOR +
                 String.format("%.3f", newCluster.getMaxRatio()) + DELIMINATOR +
                 String.format("%.3f", clusterUtilities.getMaxILAngosticRatio()) + DELIMINATOR +
                 String.format("%.3f", clusterUtilities.getMzRange()) + DELIMINATOR +

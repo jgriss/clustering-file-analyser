@@ -17,13 +17,14 @@ import java.util.ArrayList;
  */
 public class ClusterParameterExtractorTest {
     private File testFile;
+    private File unidentifiedTestfile;
     private IClusterSourceReader reader;
 
     @Before
     public void setUp() {
         try {
             testFile = TestUtilities.getTestfile();
-            reader = new ClusteringFileReader(testFile);
+            unidentifiedTestfile = new File(ClusterParameterExtractorTest.class.getClassLoader().getResource("unidentified.clustering").toURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,6 +32,7 @@ public class ClusterParameterExtractorTest {
 
     @Test
     public void testParameterExtractor() throws Exception {
+        reader = new ClusteringFileReader(testFile);
         ClusterParameterExtractor parameterExtractor = new ClusterParameterExtractor();
 
         StringWriter writer = new StringWriter();
@@ -49,7 +51,28 @@ public class ClusterParameterExtractorTest {
         String[] lines = resultString.split("\n");
 
         Assert.assertEquals(961, lines.length);
-        Assert.assertEquals("null\t305.000\t1.000\t2\t1.000\t1.000\t0.000\tYIAHLPAK:2\tYIAHLPAK\t2\t\tnull\t0\t1\t1\t", lines[1]);
-        Assert.assertEquals("null\t305.010\t1.000\t1\t1.000\t1.000\t0.000\tKNYGK:1\tKNYGK\t1\t\tnull\t0\t1\t1\t", lines[11]);
+        Assert.assertEquals("null\t305.000\t1.000\t2\t2\t0\t1.000\t1.000\t0.000\tYIAHLPAK:2\tYIAHLPAK\t2\t\tnull\t0\t1\t1\t", lines[1]);
+        Assert.assertEquals("null\t305.010\t1.000\t1\t1\t0\t1.000\t1.000\t0.000\tKNYGK:1\tKNYGK\t1\t\tnull\t0\t1\t1\t", lines[11]);
+    }
+
+    @Test
+    public void testUnidentifiedExtraction() throws Exception {
+        reader = new ClusteringFileReader(unidentifiedTestfile);
+        ClusterParameterExtractor parameterExtractor = new ClusterParameterExtractor();
+
+        StringWriter writer = new StringWriter();
+        parameterExtractor.setWriter(writer);
+
+        ArrayList<IClusterSourceListener> listeners = new ArrayList<IClusterSourceListener>(1);
+        listeners.add(parameterExtractor);
+
+        reader.readClustersIteratively(listeners);
+
+        parameterExtractor.completeResultFile();
+        writer.close();
+
+        String resultString = writer.toString();
+
+        String[] lines = resultString.split("\n");
     }
 }

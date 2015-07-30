@@ -76,6 +76,9 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
 
     @Override
     protected void processClusterInternally(ICluster newCluster) throws Exception {
+        if (newCluster.getIdentifiedSpecCount() < 1)
+            return;
+
         clusterUtilities.processCluster(newCluster);
 
         // only process reliable clusters
@@ -136,6 +139,9 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
         // save everything again, only this time per PSM
         String correctSequence = clusterUtilities.getMaxSequence().replaceAll("I", "L");
         for (ISpectrumReference specRef : newCluster.getSpectrumReferences()) {
+            if (!specRef.isIdentified())
+                continue;
+
             boolean isCorrect = false;
 
             for (IPeptideSpectrumMatch psm : specRef.getPSMs()) {

@@ -80,13 +80,14 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
     @Override
     protected void processClusterInternally(ICluster newCluster) throws Exception {
         for (int minSize : MIN_CLUSTER_SIZES) {
-            if (newCluster.getSpecCount() < minSize)
+            if (newCluster.getIdentifiedSpecCount() < minSize)
                 continue;
 
             // add the size to the total cluster size
             if (!totalClusterSizes.containsKey(minSize))
                 totalClusterSizes.put(minSize, 0L);
-            totalClusterSizes.put(minSize, totalClusterSizes.get(minSize) + newCluster.getSpecCount());
+
+            totalClusterSizes.put(minSize, totalClusterSizes.get(minSize) + newCluster.getIdentifiedSpecCount());
 
             // add to total number of clusters
             if (!clusterCounts.containsKey(minSize))
@@ -99,6 +100,9 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
                 clusteredSpectraCounts.put(minSize, new HashSet<String>());
 
             for (ISpectrumReference specRef : newCluster.getSpectrumReferences()) {
+                if (!specRef.isIdentified())
+                    continue;
+
                 clusteredSpectraCounts.get(minSize).add(specRef.getSpectrumId());
             }
 
@@ -152,11 +156,22 @@ public class ClusteredSpectraAnalyser extends AbstractClusteringSourceAnalyser {
     }
 
     private String extractMostCommonSequence(ICluster cluster) {
+        ISpectrumReference firstIdentifiedSpec = null;
+        for (ISpectrumReference specRef : cluster.getSpectrumReferences()) {
+            if (specRef.isIdentified()) {
+                firstIdentifiedSpec = specRef;
+                break;
+            }
+        }
+
         // test whether the cluster contains specially identified spectra
-        if (cluster.getSpectrumReferences().get(0).getSpectrumId().contains("splib_sequence=")) {
+        if (firstIdentifiedSpec.getSpectrumId().contains("splib_sequence=")) {
             Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
 
             for (ISpectrumReference spectrumReference : cluster.getSpectrumReferences()) {
+                if (!spectrumReference.isIdentified())
+                    continue;
+
                 String sequence = extractSpectrumReferenceSequence(spectrumReference);
 
                 if (!sequenceCounts.containsKey(sequence))

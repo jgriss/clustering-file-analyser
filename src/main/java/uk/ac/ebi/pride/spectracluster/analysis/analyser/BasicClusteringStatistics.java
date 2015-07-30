@@ -17,6 +17,9 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
     public static String DESCRIPTION = "Generates basic statistics about a .clustering file like # clusters.";
     public static final float LARGE_PRECURSOR_MZ_RANGE = 1.5F;
 
+    private int allIdentifiedClusters = 0;
+    private int unidentifiedClusters = 0;
+    private int mixedClusters = 0;
     private float nClusters = 0;
     private int nSingleClusters = 0;
     private float averageRatio = 0;
@@ -67,6 +70,13 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
             nSingleClusters++;
             return;
         }
+
+        if (newCluster.getIdentifiedSpecCount() < 1)
+            unidentifiedClusters++;
+        else if (newCluster.getUnidentifiedSpecCount() < 1)
+            allIdentifiedClusters++;
+        else
+            mixedClusters++;
 
         totalNumberOfSpectra += newCluster.getSpecCount();
         averageRatio = averageRatio / nClusters * (nClusters - 1) + newCluster.getMaxRatio() / nClusters;
@@ -128,6 +138,9 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
     @Override
     public void completeResultFile() throws Exception {
         String resultString = String.format("Number of clusters: %.0f (%d with 1 spec)\n" +
+                        "All identified clusters: %d\n" +
+                        "All unidentified clusters: %d\n" +
+                        "Mixed clusters: %d\n" +
                         "Average maximum ratio: %.3f\n" +
                         "Average cluster size: %.3f\n" +
                         "Minimum size: %d\nMaximum size: %d\n" +
@@ -138,7 +151,7 @@ public class BasicClusteringStatistics extends AbstractClusteringSourceAnalyser 
                         "Clusters with precursor m/z range > %.1f: %d\n" +
                         "Mismatched spectra: %.2f%%\n" +
                         "Clean clusters: %.2f%%\n",
-                nClusters, nSingleClusters, averageRatio, averageClusterSize, minSize, maxSize,
+                nClusters, nSingleClusters, allIdentifiedClusters, unidentifiedClusters, mixedClusters, averageRatio, averageClusterSize, minSize, maxSize,
                 minRatio, maxRatio, stableClusters, totalPrecursorMzRange / (nClusters - nSingleClusters),
                 maxPrecursorMzRange, LARGE_PRECURSOR_MZ_RANGE, nLargePrecursorMzRange,
                 (float) (totalNumberOfMismatchedSpectra * 100 / totalNumberOfSpectra), (float) (cleanClusters * 100 / nClusters));

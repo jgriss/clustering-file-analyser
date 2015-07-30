@@ -12,6 +12,8 @@ import java.util.*;
  * Created by jg on 14.07.14.
  */
 public class ClusterUtilities {
+    public static final String UNIDENTIFIED_SEQUENCE="UNLDENTLFLED";
+
     private ICluster currentCluster;
 
     private String maxSequence;
@@ -57,12 +59,15 @@ public class ClusterUtilities {
     }
 
     private void updateSequences(ICluster cluster) {
+        if (cluster.getIdentifiedSpecCount() < 1)
+            return;
+
         // update the most common sequence
         List<Object> maxSequenceProperties = getMaxSequence(cluster, Collections.EMPTY_SET);
 
         this.maxSequence = (String) maxSequenceProperties.get(0);
         this.maxSequenceCount = (Integer) maxSequenceProperties.get(1);
-        this.maxILAngosticRatio = (float) this.maxSequenceCount / cluster.getSpectrumReferences().size();
+        this.maxILAngosticRatio = (float) this.maxSequenceCount / cluster.getIdentifiedSpecCount();
         this.sequenceCounts = createSequenceCounts(cluster);
 
         // get the second most common sequence
@@ -129,6 +134,9 @@ public class ClusterUtilities {
         Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
 
         for (ISpectrumReference spectrumReference : cluster.getSpectrumReferences()) {
+            if (!spectrumReference.isIdentified())
+                continue;
+
             IPeptideSpectrumMatch peptideSpectrumMatch = spectrumReference.getMostCommonPSM();
             String cleanSequence = cleanSequence(peptideSpectrumMatch.getSequence());
 
@@ -148,10 +156,17 @@ public class ClusterUtilities {
      * @return
      */
     private List<Object> getMaxSequence(ICluster cluster, Set<String> knownMaxSequence) {
+        if (cluster.getIdentifiedSpecCount() < 1)
+            return null;
+
         Map<String, Integer> sequenceCounts = new HashMap<String, Integer>();
         Map<String, String> ilCorrectedToOriginalSequence = new HashMap<String, String>();
 
         for (ISpectrumReference spectrumReference : cluster.getSpectrumReferences()) {
+            // only works on identified specRefs
+            if (!spectrumReference.isIdentified())
+                continue;
+
             IPeptideSpectrumMatch peptideSpectrumMatch = spectrumReference.getMostCommonPSM();
             String ilAgnosticSequence = peptideSpectrumMatch.getSequence().replaceAll("I", "L");
             ilAgnosticSequence = cleanSequence(ilAgnosticSequence);
@@ -279,7 +294,7 @@ public class ClusterUtilities {
     }
 
     public boolean isStable() {
-        if (currentCluster.getSpectrumReferences().size() >= 10 & maxILAngosticRatio > 0.7)
+        if (currentCluster.getIdentifiedSpecCount() >= 10 & maxILAngosticRatio > 0.7)
             return true;
 
         return false;
