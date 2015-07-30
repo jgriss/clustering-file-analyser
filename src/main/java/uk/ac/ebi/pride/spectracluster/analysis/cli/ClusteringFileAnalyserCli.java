@@ -56,6 +56,22 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()))
                 maxPrecursor = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()));
 
+            int minIdentifiedSpec = Integer.MIN_VALUE;
+            if (commandLine.hasOption(CliOptions.OPTIONS.MIN_IDENTIFIED_SPEC.getValue()))
+                minIdentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_IDENTIFIED_SPEC.getValue()));
+
+            int maxIdentifiedSpec = Integer.MAX_VALUE;
+            if (commandLine.hasOption(CliOptions.OPTIONS.MAX_IDENTIFIED_SPEC.getValue()))
+                maxIdentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_IDENTIFIED_SPEC.getValue()));
+
+            int minUnidentifiedSpec = Integer.MIN_VALUE;
+            if (commandLine.hasOption(CliOptions.OPTIONS.MIN_UNIDENTIFIED_SPEC.getValue()))
+                minUnidentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_UNIDENTIFIED_SPEC.getValue()));
+
+            int maxUnidentifiedSpec = Integer.MAX_VALUE;
+            if (commandLine.hasOption(CliOptions.OPTIONS.MAX_UNIFENTIFIED_SPEC.getValue()))
+                maxUnidentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_UNIFENTIFIED_SPEC.getValue()));
+
             Set<String> modifications = new HashSet<String>();
             if (commandLine.hasOption(CliOptions.OPTIONS.MODIFICATION.getValue())) {
                 for (String mod : commandLine.getOptionValues(CliOptions.OPTIONS.MODIFICATION.getValue()))
@@ -133,6 +149,12 @@ public class ClusteringFileAnalyserCli {
 
                 theAnalyser.setMinPrecursorMz(minPrecursor);
                 theAnalyser.setMaxPrecursorMz(maxPrecursor);
+
+                theAnalyser.setMinIdentifiedSpec(minIdentifiedSpec);
+                theAnalyser.setMaxIdentifiedSpec(maxIdentifiedSpec);
+
+                theAnalyser.setMinUnidentifiedSpec(minUnidentifiedSpec);
+                theAnalyser.setMaxUnidentifiedSpec(maxUnidentifiedSpec);
 
                 theAnalyser.setModifications(modifications);
                 theAnalyser.setSpecies(species);

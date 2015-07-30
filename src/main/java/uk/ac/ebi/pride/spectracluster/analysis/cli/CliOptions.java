@@ -17,6 +17,10 @@ public class CliOptions {
         MAX_SIZE("max_size"),
         MIN_RATIO("min_ratio"),
         MAX_RATIO("max_ratio"),
+        MIN_IDENTIFIED_SPEC("min_identified_spectra"),
+        MAX_IDENTIFIED_SPEC("max_identified_spectra"),
+        MIN_UNIDENTIFIED_SPEC("min_unidentified_spectra"),
+        MAX_UNIFENTIFIED_SPEC("max_unidentified_spectra"),
         MIN_PRECURSOR("min_precursor"),
         MAX_PRECURSOR("max_precurosr"),
         MODIFICATION("modification"),
@@ -72,6 +76,30 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.MAX_SIZE.getValue());
         options.addOption(maxSize);
+
+        Option minId = OptionBuilder
+                .withDescription("minimum number of identified spectra")
+                .hasArg()
+                .create(OPTIONS.MIN_IDENTIFIED_SPEC.getValue());
+        options.addOption(minId);
+
+        Option maxId = OptionBuilder
+                .withDescription("maximum number of identified spectra")
+                .hasArg()
+                .create(OPTIONS.MAX_IDENTIFIED_SPEC.getValue());
+        options.addOption(maxId);
+
+        Option minUnid = OptionBuilder
+                .withDescription("minimum number of unidentified spectra")
+                .hasArg()
+                .create(OPTIONS.MIN_UNIDENTIFIED_SPEC.getValue());
+        options.addOption(minUnid);
+
+        Option maxUnid = OptionBuilder
+                .withDescription("maximum number of unidentified spectra")
+                .hasArg()
+                .create(OPTIONS.MAX_UNIFENTIFIED_SPEC.getValue());
+        options.addOption(maxUnid);
 
         Option minRatio = OptionBuilder
                 .withDescription("minimum ratio a cluster may have to still be processed.")

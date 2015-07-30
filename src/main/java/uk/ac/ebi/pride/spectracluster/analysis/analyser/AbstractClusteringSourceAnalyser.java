@@ -2,7 +2,6 @@ package uk.ac.ebi.pride.spectracluster.analysis.analyser;
 
 import uk.ac.ebi.pride.spectracluster.analysis.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.analysis.util.ModificationMapper;
-import uk.ac.ebi.pride.spectracluster.clusteringfilereader.io.IClusterSourceListener;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.IModification;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.IPeptideSpectrumMatch;
@@ -21,6 +20,10 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
     private float maxClusterRatio = Float.MAX_VALUE;
     private float minPrecursorMz = Float.MIN_VALUE;
     private float maxPrecursorMz = Float.MAX_VALUE;
+    private int minIdentifiedSpec = Integer.MIN_VALUE;
+    private int maxIdentifiedSpec = Integer.MAX_VALUE;
+    private int minUnidentifiedSpec = Integer.MIN_VALUE;
+    private int maxUnidentifiedSpec = Integer.MAX_VALUE;
     private Set<String> modifications;
     private Set<String> species;
     protected Writer writer;
@@ -74,6 +77,38 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
         this.maxPrecursorMz = maxPrecursorMz;
     }
 
+    public int getMinIdentifiedSpec() {
+        return minIdentifiedSpec;
+    }
+
+    public void setMinIdentifiedSpec(int minIdentifiedSpec) {
+        this.minIdentifiedSpec = minIdentifiedSpec;
+    }
+
+    public int getMaxIdentifiedSpec() {
+        return maxIdentifiedSpec;
+    }
+
+    public void setMaxIdentifiedSpec(int maxIdnetifiedSpec) {
+        this.maxIdentifiedSpec = maxIdnetifiedSpec;
+    }
+
+    public int getMinUnidentifiedSpec() {
+        return minUnidentifiedSpec;
+    }
+
+    public void setMinUnidentifiedSpec(int minUnidentifiedSpec) {
+        this.minUnidentifiedSpec = minUnidentifiedSpec;
+    }
+
+    public int getMaxUnidentifiedSpec() {
+        return maxUnidentifiedSpec;
+    }
+
+    public void setMaxUnidentifiedSpec(int maxUnidentifiedSpec) {
+        this.maxUnidentifiedSpec = maxUnidentifiedSpec;
+    }
+
     protected boolean ignoreCluster(ICluster cluster) {
         if (cluster.getSpecCount() > maxClusterSize)
             return true;
@@ -91,6 +126,18 @@ abstract public class AbstractClusteringSourceAnalyser implements IClusteringSou
             return true;
 
         if (cluster.getMaxRatio() < minClusterRatio)
+            return true;
+
+        if (cluster.getIdentifiedSpecCount() < minIdentifiedSpec)
+            return true;
+
+        if (cluster.getIdentifiedSpecCount() > maxIdentifiedSpec)
+            return true;
+
+        if (cluster.getUnidentifiedSpecCount() < minUnidentifiedSpec)
+            return true;
+
+        if (cluster.getUnidentifiedSpecCount() > maxUnidentifiedSpec)
             return true;
 
         // test for modifications
