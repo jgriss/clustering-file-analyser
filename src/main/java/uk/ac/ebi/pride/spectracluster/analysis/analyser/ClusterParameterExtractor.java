@@ -71,15 +71,18 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
 
     @Override
     protected void processClusterInternally(ICluster newCluster) throws Exception {
-        ClusterUtilities clusterUtilities1 = new ClusterUtilities(newCluster);
+        clusterUtilities = new ClusterUtilities(newCluster);
 
         // build the sequence string
         StringBuilder sequenceString = new StringBuilder();
-        for (String sequence : clusterUtilities.getSequenceCounts().keySet()) {
-            if (sequenceString.length() > 0)
-                sequenceString.append(",");
 
-            sequenceString.append(sequence + ":" + clusterUtilities.getSequenceCounts().get(sequence));
+        if (newCluster.getIdentifiedSpecCount() > 0) {
+            for (String sequence : clusterUtilities.getSequenceCounts().keySet()) {
+                if (sequenceString.length() > 0)
+                    sequenceString.append(",");
+
+                sequenceString.append(sequence + ":" + clusterUtilities.getSequenceCounts().get(sequence));
+            }
         }
 
         // get the species

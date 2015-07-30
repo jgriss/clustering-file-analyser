@@ -32,7 +32,7 @@ public class ClusteringFileAnalyserCli {
             CommandLine commandLine = parser.parse(CliOptions.getOptions(),
                     args);
 
-            int minSize = Integer.MIN_VALUE;
+            int minSize = 0;
             if (commandLine.hasOption(CliOptions.OPTIONS.MIN_SIZE.getValue()))
                 minSize = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_SIZE.getValue()));
 
@@ -40,7 +40,7 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_SIZE.getValue()))
                 maxSize = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_SIZE.getValue()));
 
-            float minRatio = Float.MIN_VALUE;
+            float minRatio = 0;
             if (commandLine.hasOption(CliOptions.OPTIONS.MIN_RATIO.getValue()))
                 minRatio = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_RATIO.getValue()));
 
@@ -48,7 +48,7 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_RATIO.getValue()))
                 maxRatio = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_RATIO.getValue()));
 
-            float minPrecursor = Float.MIN_VALUE;
+            float minPrecursor = 0;
             if (commandLine.hasOption(CliOptions.OPTIONS.MIN_PRECURSOR.getValue()))
                 minPrecursor = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_PRECURSOR.getValue()));
 
@@ -56,7 +56,7 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()))
                 maxPrecursor = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_PRECURSOR.getValue()));
 
-            int minIdentifiedSpec = Integer.MIN_VALUE;
+            int minIdentifiedSpec = 0;
             if (commandLine.hasOption(CliOptions.OPTIONS.MIN_IDENTIFIED_SPEC.getValue()))
                 minIdentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_IDENTIFIED_SPEC.getValue()));
 
@@ -64,7 +64,7 @@ public class ClusteringFileAnalyserCli {
             if (commandLine.hasOption(CliOptions.OPTIONS.MAX_IDENTIFIED_SPEC.getValue()))
                 maxIdentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAX_IDENTIFIED_SPEC.getValue()));
 
-            int minUnidentifiedSpec = Integer.MIN_VALUE;
+            int minUnidentifiedSpec = 0;
             if (commandLine.hasOption(CliOptions.OPTIONS.MIN_UNIDENTIFIED_SPEC.getValue()))
                 minUnidentifiedSpec = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MIN_UNIDENTIFIED_SPEC.getValue()));
 

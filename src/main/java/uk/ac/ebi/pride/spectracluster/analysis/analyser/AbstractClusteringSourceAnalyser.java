@@ -14,15 +14,15 @@ import java.util.Set;
  * Created by jg on 06.11.14.
  */
 abstract public class AbstractClusteringSourceAnalyser implements IClusteringSourceAnalyser {
-    private int minClusterSize = Integer.MIN_VALUE;
+    private int minClusterSize = 0;
     private int maxClusterSize = Integer.MAX_VALUE;
-    private float minClusterRatio = Float.MIN_VALUE;
+    private float minClusterRatio = 0;
     private float maxClusterRatio = Float.MAX_VALUE;
-    private float minPrecursorMz = Float.MIN_VALUE;
+    private float minPrecursorMz = 0;
     private float maxPrecursorMz = Float.MAX_VALUE;
-    private int minIdentifiedSpec = Integer.MIN_VALUE;
+    private int minIdentifiedSpec = 0;
     private int maxIdentifiedSpec = Integer.MAX_VALUE;
-    private int minUnidentifiedSpec = Integer.MIN_VALUE;
+    private int minUnidentifiedSpec = 0;
     private int maxUnidentifiedSpec = Integer.MAX_VALUE;
     private Set<String> modifications;
     private Set<String> species;
