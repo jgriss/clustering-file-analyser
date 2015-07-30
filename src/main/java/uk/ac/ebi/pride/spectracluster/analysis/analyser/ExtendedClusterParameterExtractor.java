@@ -79,7 +79,7 @@ public class ExtendedClusterParameterExtractor extends AbstractClusteringSourceA
 
     @Override
     protected void processClusterInternally(ICluster newCluster) throws Exception {
-        clusterUtilities.processCluster(newCluster);
+        clusterUtilities = new ClusterUtilities(newCluster);
 
         // build the sequence string
         StringBuilder sequenceString = new StringBuilder();

@@ -71,7 +71,7 @@ public class ClusterParameterExtractor extends AbstractClusteringSourceAnalyser 
 
     @Override
     protected void processClusterInternally(ICluster newCluster) throws Exception {
-        clusterUtilities.processCluster(newCluster);
+        ClusterUtilities clusterUtilities1 = new ClusterUtilities(newCluster);
 
         // build the sequence string
         StringBuilder sequenceString = new StringBuilder();

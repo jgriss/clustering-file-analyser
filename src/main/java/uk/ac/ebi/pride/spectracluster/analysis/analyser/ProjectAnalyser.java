@@ -79,7 +79,7 @@ public class ProjectAnalyser extends AbstractClusteringSourceAnalyser {
         if (newCluster.getIdentifiedSpecCount() < 1)
             return;
 
-        clusterUtilities.processCluster(newCluster);
+        clusterUtilities = new ClusterUtilities(newCluster);
 
         // only process reliable clusters
         if (!clusterUtilities.isStable())
